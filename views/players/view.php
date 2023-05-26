@@ -8,6 +8,7 @@ use yii\grid\GridView;
 $this->title = 'Chart View of Data';
 ?>
 <div class="players-view">
+    <div class="card">
     <div class="row ">
         <div class="col-sm-6">
             <h4>SCORE CHART</h4>
@@ -21,9 +22,29 @@ $this->title = 'Chart View of Data';
                 'summary' => '', // Disable the summary section
                 'tableOptions' => ['class' => 'table table-striped'],
                 'columns' => [
-                    'name',
-                    'jersey_no',
-                    'type'
+                    [
+                        'attribute' => 'player_id',
+                        'label' => 'Player Name',
+                        'value' =>function($model){
+                            return $model->player->name;
+                        }
+                    ],
+                    [
+                        'attribute' => 'player_id',
+                        'label' => 'Jersey NO',
+                        'value' =>function($model){
+                            return $model->player->jersey_no;
+                        }
+                    ],
+                    [
+                        'attribute' => 'player_id',
+                        'label' => 'Player Name',
+                        'value' =>function($model){
+                            return $model->player->name;
+                        }
+                    ],
+                    'score',
+                    
                 ],
             ]);
             ?>
@@ -37,12 +58,12 @@ $this->title = 'Chart View of Data';
         <?= Html::a('Back', ['index'], ['class' => 'btn', 'style'=>'margin-top:50px;']) ?>
 
     </div>
-</div>
+</div></div>
 <?Php
 $data = [];
 foreach ($dataProvider->getModels() as $player) {
     $data[] = [
-        'name' => $player->name,
+        'name' => $player->player->name,
         'y' => $player->score,
     ];
 }

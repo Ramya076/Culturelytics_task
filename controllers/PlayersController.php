@@ -9,6 +9,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use Yii;
 use yii\web\Response;
+use app\models\PredictPlayer;
+use app\models\PredictPlayerSearch;
 
 /**
  * PlayersController implements the CRUD actions for Players model.
@@ -40,7 +42,7 @@ class PlayersController extends Controller {
     public function actionIndex() {
         $searchModel = new PlayersSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-        $predict = $searchModel->predict($this->request->queryParams);
+        $predict = (new PredictPlayerSearch())->search($this->request->queryParams);
         return $this->render('index', [
                     'searchModel' => $searchModel,
                     'dataProvider' => $dataProvider,
@@ -48,16 +50,30 @@ class PlayersController extends Controller {
         ]);
     }
 
+    public function actionRemovePlayer() {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $draggedId = Yii::$app->request->post('draggedId');
+
+        // Find the dragged player and update the sort_order field
+        $draggedPlayer = PredictPlayer::findOne(['player_id'=>$draggedId]);
+        if ($draggedPlayer) {
+            $draggedPlayer->delete();
+            return ['success' => true];
+        }
+
+        return ['success' => false];
+    }
     public function actionDragPlayer() {
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $draggedId = Yii::$app->request->post('draggedId');
 
         // Find the dragged player and update the sort_order field
-        $draggedPlayer = Players::findOne($draggedId);
+        $draggedPlayer = new PredictPlayer();
         if ($draggedPlayer) {
-            $draggedPlayer->sort_order = $draggedId;
-            $draggedPlayer->save(false);
+            $draggedPlayer->player_id = $draggedId;
+            $draggedPlayer->save();
             return ['success' => true];
         }
 
@@ -72,7 +88,7 @@ class PlayersController extends Controller {
      */
     public function actionView() {
          $searchModel = new PlayersSearch();
-        $dataProvider = $searchModel->predictview($this->request->queryParams);
+        $dataProvider = (new PredictPlayerSearch())->predictview($this->request->queryParams);
       
         return $this->render('view', [
                   'searchModel' => $searchModel,
@@ -115,14 +131,84 @@ class PlayersController extends Controller {
     public function actionUpdate($id) {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+            Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+            return \yii\widgets\ActiveForm::validate($model);
+        }
+        if ($this->request->isPost) {
+            if ($model->load($this->request->post()) && $model->save()) {
+                return $this->redirect(['index']);
+            }
+        } else {
+            $model->loadDefaultValues();
         }
 
         return $this->render('update', [
                     'model' => $model,
         ]);
     }
+
+    public function actionUpdateSortorder()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        if (Yii::$app->request->isAjax) {
+            $postData = Yii::$app->request->post();
+    
+            // Retrieve the data sent from the client-side
+            $data = $postData['data'];
+            $tableId = $postData['table'];
+          
+            $success = true; // Variable to track the overall success
+            // Process and update the sort order in the database
+            // Iterate through the received data and update the corresponding records in the database
+      
+            foreach ($data as $index => $item) {
+                $sortOrder = $item['sort_order'];
+                $id = $item['id'];
+                if(!empty($id)){
+                    if($tableId =='table_predict'){
+                        $model = PredictPlayer::findOne(['id' => $id]);
+                        if(empty($model)){
+                            $model = new PredictPlayer();
+                            $model->player_id = $id;
+                            $model->sort_order =$sortOrder;
+                        }else{
+                            $model->sort_order =$sortOrder;
+                        }
+                        $model->save(false);
+                        $success = true;
+    
+                    }elseif($tableId =='table_squad'){
+                        $model = Players::findOne(['id' => $id]);
+                        if(!empty($model))
+                        {
+                            $model->sort_order = $sortOrder;
+                            $model->save(false);
+                            $success = true;
+                        }else{
+                            $model = PredictPlayer::findOne(['id' => $id]);
+                            $model->delete(); // remove the player from predict
+                        }
+                        
+                    }
+        
+                    
+                }
+              
+            }
+    
+            
+            if ($success) {
+                return ['success' => true];
+            } else {
+                return ['success' => false];
+            }
+        }
+    
+        return ['success' => false];
+    }
+    
 
     /**
      * Deletes an existing Players model.
@@ -132,6 +218,11 @@ class PlayersController extends Controller {
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionDelete($id) {
+        
+        $predict_player = PredictPlayer::findOne(['player_id'=>$id]);
+        if(!empty($predict_player)){
+            $predict_player->delete();        
+        }
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
@@ -154,39 +245,39 @@ class PlayersController extends Controller {
 
 
     public function actionStorePredictions()
-{
-    Yii::$app->response->format = Response::FORMAT_JSON;
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
 
-    if (Yii::$app->request->isPost) {
-        $inputs = Yii::$app->request->post();
-        unset($inputs['_csrf']); // Remove the CSRF token from the input data
+        if (Yii::$app->request->isPost) {
+            $inputs = Yii::$app->request->post();
+            unset($inputs['_csrf']); // Remove the CSRF token from the input data
 
-        $success = true; // Variable to track the overall success
+            $success = true; // Variable to track the overall success
 
-        foreach ($inputs as $key => $value) {
-            // Extract the player ID from the input key
-            $playerId = substr($key, strlen('input_'));
+            foreach ($inputs as $key => $value) {
+                // Extract the player ID from the input key
+                $playerId = substr($key, strlen('input_'));
 
-            // Find the corresponding player prediction record and update the score
-            $prediction = Players::findOne($playerId);
-            if ($prediction) {
-                $prediction->score = $value;
+                // Find the corresponding player prediction record and update the score
+                $prediction = PredictPlayer::findOne($playerId);
+                if ($prediction) {
+                    $prediction->score = $value;
 
-                if (!$prediction->save(false)) {
-                    $success = false; // Set the success variable to false if saving fails for any prediction
+                    if (!$prediction->save(false)) {
+                        $success = false; // Set the success variable to false if saving fails for any prediction
+                    }
                 }
+            }
+
+            if ($success) {
+                return ['success' => true];
+            } else {
+                return ['success' => false];
             }
         }
 
-        if ($success) {
-            return ['success' => true];
-        } else {
-            return ['success' => false];
-        }
+        return ['success' => false];
     }
-
-    return ['success' => false];
-}
 
 
 }

@@ -23,6 +23,14 @@ ALTER TABLE `predict_player`
 --
 -- Constraints for table `predict_player`
 --
+-- AUTO_INCREMENT for table `predict_player`
+--
+ALTER TABLE `predict_player`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;
+COMMIT;
+
 ALTER TABLE `predict_player`
   ADD CONSTRAINT `predict_player_ibfk_1` FOREIGN KEY (`player_id`) REFERENCES `players` (`id`);
 COMMIT;
+
+

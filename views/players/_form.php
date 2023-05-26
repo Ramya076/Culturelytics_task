@@ -17,7 +17,6 @@ use yii\widgets\ActiveForm;
                 'id' => $form_id,
                 'enableAjaxValidation' => true,
                 'enableClientValidation' => false,
-                'options' => ['enctype' => 'multipart/form-data']
     ]);
     ?>
 
@@ -33,7 +32,11 @@ use yii\widgets\ActiveForm;
         </div>
 
         <div class="col-md-12">
-            <?= $form->field($model, 'type')->textInput(['maxlength' => true,'oninput'=>"return allowOnlyAlphabets(event)"]) ?>
+        <?= $form->field($model, 'type')->dropDownList(
+          ['1' => 'All Rounder', '2' => 'Bowler', '3' => 'Batsman','4'=>'Wicket Keeper'],
+          ['prompt' => 'Select type']
+        ); ?>
+
         </div>
 
 

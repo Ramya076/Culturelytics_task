@@ -184,3 +184,19 @@ thead, tbody, tfoot, tr, td, th{
 .table_predict input{
  width:100px;
 }
+.card {
+    box-shadow: 0 0px 10px 0 rgba(0, 0, 0, 0.2);
+    padding: 50px 40px;
+    margin-bottom: 20px !important;
+    background-color: #fff;
+    border-radius: 6px;
+    width: 80%;
+    max-width: 1500px;
+}
+.players-index, .players-view{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}

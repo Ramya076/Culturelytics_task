@@ -17,7 +17,7 @@ class PlayersSearch extends Players
     public function rules()
     {
         return [
-            [['id', 'name', 'jersey_no', 'score', 'sort_order'], 'integer'],
+            [['id', 'name', 'jersey_no', 'sort_order'], 'integer'],
             [['type'], 'safe'],
         ];
     }
@@ -40,7 +40,11 @@ class PlayersSearch extends Players
      */
     public function search($params)
     {
-        $query = Players::find()->where(['sort_order'=>NULL]);
+        $query = Players::find()
+        ->leftJoin('predict_player', 'predict_player.player_id = players.id')
+        ->where(['predict_player.player_id' => null])
+        ->orderBy(['sort_order' => SORT_ASC]);
+    
 
         // add conditions that should always apply here
 
@@ -61,7 +65,6 @@ class PlayersSearch extends Players
             'id' => $this->id,
             'name' => $this->name,
             'jersey_no' => $this->jersey_no,
-            'score' => $this->score,
             'sort_order' => $this->sort_order,
         ]);
 
@@ -70,40 +73,5 @@ class PlayersSearch extends Players
         return $dataProvider;
     }
     
-    public function predict($params)
-    {
-        $query = Players::find()->where(['not', ['sort_order' => null]]);
-        // add conditions that should always apply here
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
-        $this->load($params);
-
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }
-
-        return $dataProvider;
-    }
-    public function predictview($params)
-    {
-        $query = Players::find()->where(['not', ['sort_order' => null]])->andWhere(['not',['score'=>null]]);
-        // add conditions that should always apply here
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
-        $this->load($params);
-
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }
-
-        return $dataProvider;
-    }
+    
 }

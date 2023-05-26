@@ -31,7 +31,7 @@ class Players extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'jersey_no', 'type'], 'required'],
-            [['jersey_no', 'score', 'sort_order'], 'integer'],
+            [['jersey_no', 'sort_order'], 'integer'],
             [['name', 'type'], 'string', 'max' => 255],
             ['name','unique'],
             ['jersey_no','unique']
@@ -48,7 +48,6 @@ class Players extends \yii\db\ActiveRecord
             'name' => 'Name',
             'jersey_no' => 'Jersey No',
             'type' => 'Type',
-            'score' => 'Score',
             'sort_order' => 'Sort Order',
         ];
     }

@@ -6,11 +6,13 @@
 use app\assets\AppAsset;
 use app\assets\SiteMainAsset;
 use app\assets\HighchartAsset;
+use app\assets\SortableAsset;
 use app\widgets\Alert;
 use yii\helpers\Html;
 
 AppAsset::register($this);
 SiteMainAsset::register($this);
+SortableAsset::register($this);
 HighchartAsset::register($this);
 
 $this->registerCsrfMetaTags();
@@ -40,16 +42,10 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
         <div class="col-sm-6 align-self-center">RCB Predict Playing X1</div>
     </div>
 </header>
-
-
-
-    
-</header>
-
+   
 <main id="main" class="flex-shrink-0" role="main">
     
-    <div class="container content">
-       
+    <div class="container-fluid">
         <?= $content ?>
     </div>
     <div class="modal fade" id="viewModal_lg" tabindex="-1" aria-labelledby="viewModal_lgLabel" aria-hidden="true" tabindex="-1" role="dialog">
@@ -67,31 +63,28 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     </div>
 </main>
 <script type="text/javascript">
-            $(document).ready(function () {
-                //$('[title]').tooltip();
-                $('body').tooltip({
-                    selector: '[title]'
-                });
-            });
+    $(document).ready(function () {
+        //$('[title]').tooltip();
+        $('body').tooltip({
+            selector: '[title]'
+        });
+    });
 
-            $(document).on('click', 'a.viewModallgBtn', function (e) {
-                e.preventDefault();
+    $(document).on('click', 'a.viewModallgBtn', function (e) {
+        e.preventDefault();
 
-                if ($(this).data('title')) {
-                    $('#viewModal_lg').find('.modal-title').text($(this).data('title'));
-                }
-                $('#viewModal_lg').modal('show').find('.modal-body').load($(this).attr('href'));
-            });
-            
-            // modal close
-            $(document).on('click', '.btn-close', function (e) {
-                $('#viewModal_lg').modal('toggle');
-            });
-            
-      
-           
+        if ($(this).data('title')) {
+            $('#viewModal_lg').find('.modal-title').text($(this).data('title'));
+        }
+        $('#viewModal_lg').modal('show').find('.modal-body').load($(this).attr('href'));
+    });
+    
+    // modal close
+    $(document).on('click', '.btn-close', function (e) {
+        $('#viewModal_lg').modal('toggle');
+    });    
 
-    </script>
+</script>
 
 
 <?php $this->endBody() ?>
