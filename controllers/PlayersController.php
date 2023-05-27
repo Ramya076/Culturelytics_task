@@ -143,7 +143,7 @@ class PlayersController extends Controller {
             $model->loadDefaultValues();
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
                     'model' => $model,
         ]);
     }

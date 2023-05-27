@@ -5,60 +5,68 @@ use yii\widgets\DetailView;
 use yii\grid\GridView;
 
 \yii\web\YiiAsset::register($this);
-$this->title = 'Chart View of Data';
+$this->title = 'View Predict Players';
 ?>
 <div class="players-view">
     <div class="card">
-    <div class="row ">
-        <div class="col-sm-6">
-            <h4>SCORE CHART</h4>
-            <div id="chartContainer"></div>        </div>
-        <div class='<?php echo empty($dataProvider->getModels()) ?"col-sm-12" :"col-sm-6"?>'>
-            <h4>PLAYING X1</h4>
-
-            <?=
-            GridView::widget([
-                'dataProvider' => $dataProvider,
-                'summary' => '', // Disable the summary section
-                'tableOptions' => ['class' => 'table table-striped'],
-                'columns' => [
-                    [
-                        'attribute' => 'player_id',
-                        'label' => 'Player Name',
-                        'value' =>function($model){
-                            return $model->player->name;
-                        }
-                    ],
-                    [
-                        'attribute' => 'player_id',
-                        'label' => 'Jersey NO',
-                        'value' =>function($model){
-                            return $model->player->jersey_no;
-                        }
-                    ],
-                    [
-                        'attribute' => 'player_id',
-                        'label' => 'Player Name',
-                        'value' =>function($model){
-                            return $model->player->name;
-                        }
-                    ],
-                    'score',
-                    
-                ],
-            ]);
-            ?>
-        </div>
+        <div class="card-header">
+            <h4><?php //echo Html::encode($this->title) ?></h4>
             
-    
+        </div>
+        <div class="card-body table-responsive">
+            <div class="row ">
+                <div class="col-sm-6" style='display:<?php echo empty($dataProvider->getModels()) ?"none" :""?>'>
+                    <h4>SCORE CHART</h4>
+                    <div id="chartContainer"></div>        
+                </div>
+                <div class='<?php echo empty($dataProvider->getModels()) ?"col-sm-12" :"col-sm-6"?>'>
+                    <h4>PLAYING X1</h4>
+
+                    <?=
+                    GridView::widget([
+                        'dataProvider' => $dataProvider,
+                        'summary' => '', // Disable the summary section
+                        'tableOptions' => ['class' => 'table table-striped'],
+                        'columns' => [
+                            [
+                                'attribute' => 'player_id',
+                                'label' => 'Player Name',
+                                'value' =>function($model){
+                                    return $model->player->name;
+                                }
+                            ],
+                            [
+                                'attribute' => 'player_id',
+                                'label' => 'Jersey NO',
+                                'value' =>function($model){
+                                    return $model->player->jersey_no;
+                                }
+                            ],
+                            [
+                                'attribute' => 'player_id',
+                                'label' => 'Player Name',
+                                'value' =>function($model){
+                                    return $model->player->name;
+                                }
+                            ],
+                            'score',
+                            
+                        ],
+                    ]);
+                    ?>
+                </div>
+                
+        
+            </div>
+            <div class="card-footer">
+                <div class="btnrow">
+                    <?= Html::a('Back', ['index'], ['class' => 'btn', 'style'=>'margin-top:50px;']) ?>
+                </div>
+            </div>
+        
+        </div>
     </div>
-
-    <div class="btnrow">
-
-        <?= Html::a('Back', ['index'], ['class' => 'btn', 'style'=>'margin-top:50px;']) ?>
-
-    </div>
-</div></div>
+</div>
 <?Php
 $data = [];
 foreach ($dataProvider->getModels() as $player) {
@@ -93,7 +101,7 @@ if (!empty($dataProvider->getModels())){
                 text: 'Player Performance',
                 align: 'left',
                 style: {
-                    fontSize: '10px'
+                    fontSize: '14px'
                 }
             },
             exporting: {

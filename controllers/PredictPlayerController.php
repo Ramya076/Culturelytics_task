@@ -113,7 +113,7 @@ class PredictPlayerController extends Controller
     {
         $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
+        return $this->redirect(['players/index']);
     }
 
     /**

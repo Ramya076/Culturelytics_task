@@ -21,6 +21,12 @@ $this->registerMetaTag(['name' => 'viewport', 'content' => 'width=device-width, 
 $this->registerMetaTag(['name' => 'description', 'content' => $this->params['meta_description'] ?? '']);
 $this->registerMetaTag(['name' => 'keywords', 'content' => $this->params['meta_keywords'] ?? '']);
 $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii::getAlias('@web/favicon.ico')]);
+
+// Get the base URL of your application
+$baseUrl = Yii::$app->request->baseUrl;
+
+// Generate the dynamic URL for the background image
+$imageUrl = $baseUrl . '/images/background_image.jpg';
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -37,7 +43,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <header id="header">
     <div class="row">
         <div class="col-sm-1">
-            <img src="/task/images/rcb.png" class="logo_image" style="margin-right: 10px;">
+            <img src="<?php echo Yii::$app->request->baseUrl ?>/images/rcb.png" class="logo_image" style="margin-right: 10px;">
         </div>
         <div class="col-sm-6 align-self-center">RCB Predict Playing X1</div>
     </div>
@@ -85,7 +91,11 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     });    
 
 </script>
-
+<style>
+    #main{
+        background: url('<?php echo $imageUrl; ?>');
+    }
+</style>
 
 <?php $this->endBody() ?>
 </body>
