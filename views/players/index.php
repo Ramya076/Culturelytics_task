@@ -16,122 +16,128 @@ $this->title = 'Predicted YOUR Playing X1';
 
 <div class="players-index">
     <div class="card">
-
-    <h4><?= Html::encode($this->title) ?></h4>
-
+      <div class="card-header">
+        <h4><?= Html::encode($this->title) ?></h4>
+        
+      </div>
+      <div class="card-body table-responsive">
+   
         <div class="row ">
-            <div class="col-sm-6">
-                <?=
-                GridView::widget([
-                    'dataProvider' => $dataProvider,
-                    'tableOptions' => ['class' => 'table table-striped table_squad'],
-                    'summary' => '', // Disable the summary section
-                    'columns' => [
-                        [
-                            'attribute' => 'name',
-                            'label' => 'Our Squad',
-                            'headerOptions' => ['class' => 'custom-header-class'],
-                            'contentOptions' => function ($model, $key, $index, $column) {
-                                return ['data-id' => $model->id, 'draggable' => 'true'];
-                            },
-                        ],
-                        [
-                            'attribute' => 'type',
-                            'label' => 'Player Type',
-                            'headerOptions' => ['class' => 'custom-header-class'],
-                            'value'=>function($model){
-                                if($model->type == 1) return "All Rounder";
-                                if($model->type == 2) return "Bowler";
-                                if($model->type == 3) return "Batsman";
-                                if($model->type == 4) return "Wicket Keeper";
-                            }
-                        ],
-                        [
-                            'class' => 'yii\grid\ActionColumn',
-                            'template' => '{update} {delete}', // Adjust the buttons as needed
-                            'buttons' => [
-                                'update' => function ($url, $model, $key) {
-                                    return Html::a('<i class="fa fa-pencil"></i>', $url, [
-                                        'title' => 'Update',
-                                        'class' => 'viewModallgBtn', 
-                                    ]);
-                                },
-                                'delete' => function ($url, $model, $key) {
-                                    return Html::a('<i class="fa fa-trash"></i>', $url, [
-                                        'title' => 'Delete',
-                                        'data-confirm' => 'Are you sure you want to delete this item?',
-                                        'data-method' => 'post',
-                                    ]);
-                                },
-                            ],
-                            
-                            
-                        ],
-                    ],
-                ]);
-                ?>
+          <div class="col-sm-6">
+            <div class="table-responsive">
+              <?=
+              GridView::widget([
+                  'dataProvider' => $dataProvider,
+                  'tableOptions' => ['class' => 'table table-striped table_squad'],
+                  'summary' => '', // Disable the summary section
+                  'columns' => [
+                      [
+                          'attribute' => 'name',
+                          'label' => 'Our Squad',
+                          'headerOptions' => ['class' => 'custom-header-class'],
+                          'contentOptions' => function ($model, $key, $index, $column) {
+                              return ['data-id' => $model->id, 'draggable' => 'true'];
+                          },
+                      ],
+                      [
+                          'attribute' => 'type',
+                          'label' => 'Player Type',
+                          'headerOptions' => ['class' => 'custom-header-class'],
+                          'value'=>function($model){
+                              if($model->type == 1) return "All Rounder";
+                              if($model->type == 2) return "Bowler";
+                              if($model->type == 3) return "Batsman";
+                              if($model->type == 4) return "Wicket Keeper";
+                          }
+                      ],
+                      [
+                          'class' => 'yii\grid\ActionColumn',
+                          'template' => '{update} {delete}', // Adjust the buttons as needed
+                          'buttons' => [
+                              'update' => function ($url, $model, $key) {
+                                  return Html::a('<i class="fa fa-edit"></i>', $url, [
+                                      'title' => 'Edit',
+                                      'class' => 'viewModallgBtn',
+                                      'data-title' => 'Edit player Squad',  
+                                  ]);
+                              },
+                              'delete' => function ($url, $model, $key) {
+                                  return Html::a('<i class="fa fa-trash text-danger"></i>', $url, [
+                                      'title' => 'Delete',
+                                      'data-confirm' => 'Are you sure you want to delete this item?',
+                                      'data-method' => 'post',
+                                  ]);
+                              },
+                          ],
+                          
+                          
+                      ],
+                  ],
+              ]);
+              ?>
             </div>
-            <div class="col-sm-6">
-                <div class="table-responsive">
-                <?= Html::beginForm(['store-predictions'], 'post', ['id' => 'prediction-form']) ?>
+          </div>
+          <div class="col-sm-6">
+            <div class="table-responsive">
+              <?= Html::beginForm(['store-predictions'], 'post', ['id' => 'prediction-form']) ?>
 
-                <?= GridView::widget([
-                'dataProvider' => $predict,
-                'tableOptions' => ['class' => 'table table-striped table_predict'],
-                'summary' => '', // Disable the summary section
-                'columns' => [
-                    [
-                        'attribute' => 'player_id',
-                        'label' => 'Predicted your Playing X1',
-                        'headerOptions' => ['class' => 'custom-header-class'],
-                        'contentOptions' => ['class' => 'column-name'],
-                        'value' => function ($model) {
-                            return $model->player->name;
-                        }
-                    ],
-                    [
-                        'attribute' => 'score',
-                        'label' => 'Score',
-                        'format' => 'raw',
-                        'headerOptions' => ['class' => 'custom-header-class'],
-                        'contentOptions' => ['class' => 'column-score'],
-                        'value' => function ($model) {
-                            $score = $model->score; // Assuming 'score' is the attribute name in the database
-                            return '<input type="text" class="form-control" name="input_' . $model->id . '" value="' . $score . '" onkeypress="return /[0-9\s]/i.test(event.key)" maxlength="5">';
-                        },
-                    ],
-                    [
-                        'class' => 'yii\grid\ActionColumn',
-                        'template' => '{delete}', // Adjust the buttons as needed
-                        'buttons' => [
-                        
-                            'delete' => function ($url, $model, $key) {
-                                $url = Url::to(['predict-playere/delete', 'id' => $model->id]);
-                                return Html::a('<i class="fa fa-trash"></i>', $url, [
-                                    'title' => 'Delete',
-                                    'data-confirm' => 'Are you sure you want to delete this item?',
-                                    'data-method' => 'post',
-                                ]);
-                            },
-                        ],
-                        
-                        
-                    ],
-                ],
-            ]); ?>
-
-        </div>
+              <?= GridView::widget([
+              'dataProvider' => $predict,
+              'tableOptions' => ['class' => 'table table-striped table_predict'],
+              'summary' => '', // Disable the summary section
+              'columns' => [
+                  [
+                      'attribute' => 'player_id',
+                      'label' => 'Predicted your Playing X1',
+                      'headerOptions' => ['class' => 'custom-header-class'],
+                      'contentOptions' => ['class' => 'column-name'],
+                      'value' => function ($model) {
+                          return $model->player->name;
+                      }
+                  ],
+                  [
+                      'attribute' => 'score',
+                      'label' => 'Score',
+                      'format' => 'raw',
+                      'headerOptions' => ['class' => 'custom-header-class'],
+                      'contentOptions' => ['class' => 'column-score'],
+                      'value' => function ($model) {
+                          $score = $model->score; // Assuming 'score' is the attribute name in the database
+                          return '<input type="text" class="form-control" name="input_' . $model->id . '" value="' . $score . '" onkeypress="return /[0-9\s]/i.test(event.key)" maxlength="5">';
+                      },
+                  ],
+                  [
+                      'class' => 'yii\grid\ActionColumn',
+                      'template' => '{delete}', // Adjust the buttons as needed
+                      'buttons' => [
+                      
+                          'delete' => function ($url, $model, $key) {
+                              $url = Url::to(['predict-player/delete', 'id' => $model->id]);
+                              return Html::a('<i class="fa fa-times"></i>', $url, [
+                                  'title' => 'Remove from Predict',
+                                  'data-confirm' => 'Are you sure you want to Remove this Player?',
+                                  'data-method' => 'post',
+                              ]);
+                          },
+                      ],
+                      
+                      
+                  ],
+              ],
+              ]); ?>
+           </div>
         </div>
     </div>
-  
-    <?= Html::endForm() ?>  
-
+  </div>
+  <?= Html::endForm() ?>  
+  <div class="card-footer">
     <div class="btnrow">
 
         <?= Html::a('Add', yii\helpers\Url::to(['create']), ['data-bs-toggle' => 'tooltip', 'data-bs-original-title' => 'Add player to Squad', 'class' => 'btn viewModallgBtn', 'data-title' => "Add player to Squad"]) ?>
         <?= Html::Button('Predict', ['class' => 'btn submit_btn', 'name' => 'predict-button', 'style'=>'margin-right: 10px;']) ?>
         <?= Html::a('View', ['view'], ['class' => 'btn ']) ?>
 
+    </div>
     </div>
 </div>
     

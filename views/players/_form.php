@@ -12,6 +12,7 @@ use yii\widgets\ActiveForm;
 
     <?php
     $form_id = ($model->isNewRecord) ? 'user-create' : 'user-update';
+    $btn_name  =($model->isNewRecord) ? 'Add Player' : 'Edit Player';
 
     $form = ActiveForm::begin([
                 'id' => $form_id,
@@ -43,7 +44,7 @@ use yii\widgets\ActiveForm;
     </div>
     <br>
     <div class="form-group">
-        <?= Html::submitButton('Add Player', ['class' => 'btn btn-primary','style'=>'float:right']) ?>
+        <?= Html::submitButton($btn_name, ['class' => 'btn btn-primary','style'=>'float:right']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
