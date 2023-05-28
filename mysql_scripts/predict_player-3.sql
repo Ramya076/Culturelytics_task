@@ -1,3 +1,6 @@
+ALTER TABLE players
+DROP COLUMN score;
+
 ALTER TABLE `players` CHANGE `type` `type` TINYINT NOT NULL COMMENT '1->All rounder 2->Bowler, 3->Batsman, 4->Wicket Keeper';
 
 

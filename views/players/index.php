@@ -166,37 +166,62 @@ $(function() {
   }
 
   // Update the sort order within the specified table
-  function updateSortOrder(tableId) {
-    $('.' + tableId + ' tbody tr').each(function(index) {
+function updateSortOrder(tableId) {
+  $('.' + tableId + ' tbody tr').each(function(index) {
+    var isEmptyElement = $(this).hasClass('empty');
+    if (!isEmptyElement) {
       $(this).attr('data-sort-order', index + 1);
-    });
-  }
+    }
+  });
+}
+
 
   // Update the database with the new order
   function updateDatabase(tableId) {
-    var data = [];
-    $('.' + tableId + ' tbody tr').each(function(index) {
+  var draggableElements = $('.' + tableId + ' tbody tr');
+
+  // Check if there are draggable elements
+  if (draggableElements.length === 0) {
+    console.log('No draggable elements found');
+    return; // Skip AJAX request
+  }
+
+  var data = [];
+  draggableElements.each(function(index) {
+    var isEmptyElement = $(this).hasClass('empty');
+    if (!isEmptyElement) {
       var playerId = $(this).data('key');
       var sortOrder = $(this).data('sort-order');
       data.push({ id: playerId, sort_order: sortOrder });
-    });
-
-    $.ajax({
-      url: '<?php echo Url::to(['update-sortorder']); ?>',
-      method: 'POST',
-      data: { data: data, table: tableId },
-      success: function(response) {
-        console.log('Database updated successfully');
-        $.pjax.reload({
-          container: "#pjax-grid-view",
-          timeout: false
-        });
-      },
-      error: function(xhr, status, error) {
-        console.error('Error updating database:', error);
-      }
-    });
+    }
+  });
+  
+  // Add an empty object to data if it is empty
+  if (data.length === 0) {
+    data.push({});
   }
+
+  $.ajax({
+    url: '<?php echo Url::to(['update-sortorder']); ?>',
+    method: 'POST',
+    data: { data: data, table: tableId },
+    success: function(response) {
+      console.log('Database updated successfully');
+      $.pjax.reload({
+        container: "#pjax-grid-view",
+        timeout: false
+      });
+    },
+    error: function(xhr, status, error) {
+      $.pjax.reload({
+        container: "#pjax-grid-view",
+        timeout: false
+      });
+      // console.error('Error updating database:', error);
+    }
+  });
+}
+
 
   $(document).on('click', '.submit_btn', function(e) {
     e.preventDefault();
