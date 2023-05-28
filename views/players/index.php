@@ -176,23 +176,18 @@ function updateSortOrder(tableId) {
 }
 
 
-  // Update the database with the new order
-  function updateDatabase(tableId) {
+function updateDatabase(tableId) {
   var draggableElements = $('.' + tableId + ' tbody tr');
-
-  // Check if there are draggable elements
-  if (draggableElements.length === 0) {
-    console.log('No draggable elements found');
-    return; // Skip AJAX request
-  }
-
   var data = [];
+  
   draggableElements.each(function(index) {
     var isEmptyElement = $(this).hasClass('empty');
     if (!isEmptyElement) {
       var playerId = $(this).data('key');
-      var sortOrder = $(this).data('sort-order');
-      data.push({ id: playerId, sort_order: sortOrder });
+      if (playerId) {
+        var sortOrder = $(this).data('sort-order');
+        data.push({ id: playerId, sort_order: sortOrder });
+      }
     }
   });
   
@@ -213,14 +208,14 @@ function updateSortOrder(tableId) {
       });
     },
     error: function(xhr, status, error) {
-      $.pjax.reload({
-        container: "#pjax-grid-view",
-        timeout: false
-      });
-      // console.error('Error updating database:', error);
+      console.error('Error updating database:', error);
+    },
+    complete: function() {
+      // Call your function here
     }
   });
 }
+
 
 
   $(document).on('click', '.submit_btn', function(e) {
@@ -256,7 +251,7 @@ function updateSortOrder(tableId) {
 
 </script>
 <style>
-    .sortable-placeholder {
+.sortable-placeholder {
   background-color: #f5f5f5;
   border: 2px dashed #bbb;
   height: 40px;

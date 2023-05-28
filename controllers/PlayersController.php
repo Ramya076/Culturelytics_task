@@ -149,65 +149,71 @@ class PlayersController extends Controller {
     }
 
     public function actionUpdateSortorder()
-    {
-        Yii::$app->response->format = Response::FORMAT_JSON;
+{
+    Yii::$app->response->format = Response::FORMAT_JSON;
 
-        if (Yii::$app->request->isAjax) {
-            $postData = Yii::$app->request->post();
-    
-            // Retrieve the data sent from the client-side
-            $data = $postData['data'];
-            $tableId = $postData['table'];
-          
-            $success = true; // Variable to track the overall success
-            // Process and update the sort order in the database
-            // Iterate through the received data and update the corresponding records in the database
-      
-            foreach ($data as $index => $item) {
-                $sortOrder = $item['sort_order'];
-                $id = $item['id'];
-                if(!empty($id)){
-                    if($tableId =='table_predict'){
-                        $model = PredictPlayer::findOne(['id' => $id]);
-                        if(empty($model)){
-                            $model = new PredictPlayer();
-                            $model->player_id = $id;
-                            $model->sort_order =$sortOrder;
-                        }else{
-                            $model->sort_order =$sortOrder;
-                        }
+    if (Yii::$app->request->isAjax) {
+        $postData = Yii::$app->request->post();
+
+        // Retrieve the data sent from the client-side
+        $data = $postData['data'] ?? []; // Add a null coalescing operator to handle empty data array
+        $tableId = $postData['table'];
+
+        $success = true; // Variable to track the overall success
+
+        // Process and update the sort order in the database
+        // Iterate through the received data and update the corresponding records in the database
+       if(!empty($data)){
+
+       
+        foreach ($data as $index => $item) {
+            $sortOrder = $item['sort_order'];
+            $id = $item['id'];
+            if (!empty($id)) {
+                if ($tableId == 'table_predict') {
+                    $model = PredictPlayer::findOne(['id' => $id]);
+                    if (empty($model)) {
+                        $model = new PredictPlayer();
+                        $model->player_id = $id;
+                        $model->sort_order = $sortOrder;
+                    } else {
+                        $model->sort_order = $sortOrder;
+                    }
+                    $model->save(false);
+                    $success = true;
+
+                } elseif ($tableId == 'table_squad') {
+                    $model = Players::findOne(['id' => $id]);
+                    if (!empty($model)) {
+                        $model->sort_order = $sortOrder;
                         $model->save(false);
                         $success = true;
-    
-                    }elseif($tableId =='table_squad'){
-                        $model = Players::findOne(['id' => $id]);
-                        if(!empty($model))
-                        {
-                            $model->sort_order = $sortOrder;
-                            $model->save(false);
-                            $success = true;
-                        }else{
-                            $model = PredictPlayer::findOne(['id' => $id]);
+                    } else {
+                        $model = PredictPlayer::findOne(['id' => $id]);
+                        if (!empty($model)) {
                             $model->delete(); // remove the player from predict
                         }
-                        
+                        $success = true;
                     }
-        
-                    
+
                 }
-              
-            }
-    
-            
-            if ($success) {
-                return ['success' => true];
-            } else {
-                return ['success' => false];
             }
         }
-    
-        return ['success' => false];
+        }else{
+            if($tableId == 'table_predict'){
+                (PredictPlayer::find()->one())->delete();
+            }
+        }
+        if ($success) {
+            return ['success' => true];
+        } else {
+            return ['success' => false];
+        }
     }
+
+    return ['success' => false];
+}
+
     
 
     /**
